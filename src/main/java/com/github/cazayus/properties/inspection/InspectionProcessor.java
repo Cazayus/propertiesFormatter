@@ -1,0 +1,67 @@
+package com.github.cazayus.properties.inspection;
+
+import java.util.List;
+
+import org.apache.log4j.Level;
+
+import com.intellij.codeInspection.GlobalInspectionContext;
+import com.intellij.codeInspection.InspectionEngine;
+import com.intellij.codeInspection.InspectionManager;
+import com.intellij.codeInspection.LocalInspectionTool;
+import com.intellij.codeInspection.ProblemDescriptor;
+import com.intellij.codeInspection.QuickFix;
+import com.intellij.codeInspection.ex.LocalInspectionToolWrapper;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.project.IndexNotReadyException;
+import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiFile;
+
+public final class InspectionProcessor implements Runnable {
+	private final Project project;
+	private final PsiFile psiFile;
+	private final LocalInspectionTool inspectionTool;
+	private static final Logger LOGGER = Logger.getInstance(InspectionProcessor.class);
+
+	static {
+		LOGGER.setLevel(Level.DEBUG);
+	}
+
+	public InspectionProcessor(Project project, PsiFile psiFile, LocalInspectionTool inspectionTool) {
+		this.project = project;
+		this.psiFile = psiFile;
+		this.inspectionTool = inspectionTool;
+	}
+
+	@Override
+	public void run() {
+		ApplicationManager.getApplication().invokeLater(() -> WriteCommandAction.writeCommandAction(project).run(() -> {
+			InspectionManager inspectionManager = InspectionManager.getInstance(project);
+			GlobalInspectionContext context = inspectionManager.createNewGlobalContext(false);
+			LocalInspectionToolWrapper toolWrapper = new LocalInspectionToolWrapper(inspectionTool);
+			List<ProblemDescriptor> problemDescriptors;
+			try {
+				problemDescriptors = InspectionEngine.runInspectionOnFile(psiFile, toolWrapper, context);
+			} catch (IndexNotReadyException exception) {
+				return;
+			}
+			for (ProblemDescriptor problemDescriptor : problemDescriptors) {
+				QuickFix[] fixes = problemDescriptor.getFixes();
+				if (fixes != null) {
+					writeQuickFixes(problemDescriptor, fixes);
+				}
+			}
+		}));
+	}
+
+	private void writeQuickFixes(ProblemDescriptor problemDescriptor, QuickFix[] fixes) {
+		for (QuickFix fix : fixes) {
+			@SuppressWarnings("unchecked")
+			QuickFix<ProblemDescriptor> typedFix = (QuickFix<ProblemDescriptor>) fix;
+			if (typedFix != null) {
+				typedFix.applyFix(project, problemDescriptor);
+			}
+		}
+	}
+}

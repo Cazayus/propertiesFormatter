@@ -1,19 +1,27 @@
 <idea-plugin>
-    <id>com.github.cazayus.propertiesformatter</id>
-    <name>propertiesFormatter</name>
-    <vendor>cazayus</vendor>
+	<id>com.intellij.propertiesCEA</id>
+	<name>Properties Support (modified)</name>
+	<depends>com.intellij.properties</depends>
+	<description>This plugin partially overrides IntelliJ default properties formatting and adds an Inspection that is
+		applied on save always
+	</description>
+	<vendor email="daniel.cazayus@cea.fr">DCA</vendor>
+	<version>1.1</version>
 
-    <!-- Product and plugin compatibility requirements -->
-    <!-- https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html -->
-    <depends>com.intellij.modules.platform</depends>
+	<!-- Product and plugin compatibility requirements -->
+	<!-- https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html -->
+	<depends>com.intellij.modules.platform</depends>
 
-    <extensions defaultExtensionNs="com.intellij">
-        <applicationService serviceImplementation="com.github.cazayus.propertiesformatter.services.MyApplicationService"/>
-        <projectService serviceImplementation="com.github.cazayus.propertiesformatter.services.MyProjectService"/>
-    </extensions>
+	<extensions defaultExtensionNs="com.intellij">
+		<localInspection language="Properties" shortName="CeaUnsortedPropertiesFile" bundle="messages.PropertiesBundle"
+		                 key="alpha.unsorted.properties.file.inspection.display.name.cea"
+		                 groupKey="properties.files.inspection.group.display.name"
+		                 enabledByDefault="true" level="ERROR"
+		                 implementationClass="com.github.cazayus.properties.inspection.CeaUnsortedPropertiesFileInspection" />
+	</extensions>
 
-    <projectListeners>
-        <listener class="com.github.cazayus.propertiesformatter.listeners.MyProjectManagerListener"
-                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
-    </projectListeners>
+	<projectListeners>
+		<listener class="com.github.cazayus.properties.filelistener.SaveActionManager"
+		          topic="com.intellij.openapi.fileEditor.FileDocumentManagerListener" />
+	</projectListeners>
 </idea-plugin>
