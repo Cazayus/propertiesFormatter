@@ -48,8 +48,10 @@ import com.intellij.psi.util.PsiTreeUtil;
 /**
  * @author Dmitry Batkovich
  */
-public final class CeaUnsortedPropertiesFileInspection extends LocalInspectionTool {
-	private static final Logger LOG = Logger.getInstance(CeaUnsortedPropertiesFileInspection.class);
+public final class UnsortedPropertiesFileInspection extends LocalInspectionTool {
+	static final String LINE_SEPARATOR = "\n";
+	static final String TWO_LINE_SEPARATOR = LINE_SEPARATOR + LINE_SEPARATOR;
+	static final Logger LOG = Logger.getInstance(UnsortedPropertiesFileInspection.class);
 	private static final String MESSAGE_TEMPLATE_WHOLE_RESOURCE_BUNDLE = "Property keys of resource bundle '%s' aren't CEA sorted";
 
 	@NotNull
@@ -90,7 +92,7 @@ public final class CeaUnsortedPropertiesFileInspection extends LocalInspectionTo
 		return true;
 	}
 
-	private static String getFirstKeyPart(@NotNull String fullKey) {
+	static String getFirstKeyPart(@NotNull String fullKey) {
 		return fullKey.substring(0, fullKey.indexOf('.'));
 	}
 
@@ -98,14 +100,14 @@ public final class CeaUnsortedPropertiesFileInspection extends LocalInspectionTo
 	private static boolean psiElementIsAfterABlankLine(@NotNull PsiElement psiElement) {
 		PsiElement previousWhiteSpace = psiElement.getPrevSibling();
 		switch (previousWhiteSpace.getText()) {
-		case "\n":
+		case LINE_SEPARATOR:
 			if (previousWhiteSpace.getPrevSibling() instanceof PsiComment) {
 				return psiElementIsAfterABlankLine(previousWhiteSpace.getPrevSibling());
 			} else {
 				// We are after a property
 				return false;
 			}
-		case "\n\n":
+		case TWO_LINE_SEPARATOR:
 			return !(previousWhiteSpace.getPrevSibling() instanceof PsiComment);
 		default:
 			return false;
@@ -115,7 +117,7 @@ public final class CeaUnsortedPropertiesFileInspection extends LocalInspectionTo
 	// This method checks if we have a simple line return between us and the previous property
 	private static boolean psiElementIsAfterAProperty(@NotNull PsiElement psiElement) {
 		PsiElement previousWhiteSpace = psiElement.getPrevSibling();
-		if (previousWhiteSpace.getText().equals("\n")) {
+		if (previousWhiteSpace.getText().equals(LINE_SEPARATOR)) {
 			if (previousWhiteSpace.getPrevSibling() instanceof PsiComment) {
 				return psiElementIsAfterAProperty(previousWhiteSpace.getPrevSibling());
 			} else {
@@ -146,7 +148,7 @@ public final class CeaUnsortedPropertiesFileInspection extends LocalInspectionTo
 				return false;
 			}
 
-			if (property.getPsiElement().getText().contains("\n")) {
+			if (property.getPsiElement().getText().contains(LINE_SEPARATOR)) {
 				return false;
 			}
 
@@ -243,40 +245,36 @@ public final class CeaUnsortedPropertiesFileInspection extends LocalInspectionTo
 			for (int i = 0; i < properties.size(); i++) {
 				IProperty property = properties.get(i);
 				String value = property.getValue();
-				if ((value == null) || value.trim().isEmpty()) {
-					property.setValue(" ");
-					value = property.getValue();
-				}
 				String commentAboveProperty = property.getDocCommentText();
 				if (commentAboveProperty != null) {
-					rawText.append(commentAboveProperty).append("\n");
+					rawText.append(commentAboveProperty).append(LINE_SEPARATOR);
 				}
 				String key = property.getKey();
 				String propertyText;
 				if (key != null) {
-					propertyText = PropertiesElementFactory.getPropertyText(key, value, delimiter, null, PropertyKeyValueFormat.FILE);
+					propertyText = PropertiesElementFactory.getPropertyText(key, (value != null) ? value : "", delimiter, null, PropertyKeyValueFormat.FILE);
 					rawText.append(propertyText);
 					if (i <= (properties.size() - 2)) {
 						String nextKey = properties.get(i + 1).getKey();
 						if (nextKey != null) {
 							// If one key has a point and not the other, we add a blank line
 							if (key.contains(".") && !nextKey.contains(".")) {
-								rawText.append("\n\n");
+								rawText.append(TWO_LINE_SEPARATOR);
 							} else if (!key.contains(".") && nextKey.contains(".")) {
-								rawText.append("\n\n");
+								rawText.append(TWO_LINE_SEPARATOR);
 							} else if (key.contains(".") && nextKey.contains(".")) {
 								// If both keys have points, we might add a blank line
 								if (!getFirstKeyPart(key).equals(getFirstKeyPart(nextKey))) {
-									rawText.append("\n\n");
+									rawText.append(TWO_LINE_SEPARATOR);
 								} else {
-									rawText.append("\n");
+									rawText.append(LINE_SEPARATOR);
 								}
 							} else {
 								// If both keys have no points, we add a blank line
-								rawText.append("\n\n");
+								rawText.append(TWO_LINE_SEPARATOR);
 							}
 						} else {
-							rawText.append("\n");
+							rawText.append(LINE_SEPARATOR);
 						}
 					}
 				}
@@ -292,11 +290,13 @@ public final class CeaUnsortedPropertiesFileInspection extends LocalInspectionTo
 		}
 	}
 
+	@Override
 	@NotNull
 	public String getDisplayName() {
 		return "CEA Unsorted Properties File or Resource Bundle";
 	}
 
+	@Override
 	@NotNull
 	public String getShortName() {
 		return "CeaUnsortedPropertiesFile";

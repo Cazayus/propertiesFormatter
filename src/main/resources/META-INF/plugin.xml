@@ -2,9 +2,7 @@
 	<id>com.intellij.propertiesCEA</id>
 	<name>Properties Support (modified)</name>
 	<depends>com.intellij.properties</depends>
-	<description>This plugin partially overrides IntelliJ default properties formatting and adds an Inspection that is
-		applied on save always
-	</description>
+	<description>This plugin adds an Inspection that is applied on save always</description>
 	<vendor email="daniel.cazayus@cea.fr">DCA</vendor>
 	<version>1.1</version>
 
@@ -13,11 +11,20 @@
 	<depends>com.intellij.modules.platform</depends>
 
 	<extensions defaultExtensionNs="com.intellij">
+		<!--		<lang.parserDefinition language="Properties" order="first" implementationClass="com.github.cazayus.properties.parsing.CEAPropertiesParserDefinition" />-->
+		<!--		<idIndexer filetype="Properties" order="first" implementationClass="com.github.cazayus.properties.parsing.CEAPropertiesIdIndexer" />-->
+		<!--		<todoIndexer filetype="Properties" order="first" implementationClass="com.github.cazayus.properties.parsing.CEAPropertiesTodoIndexer" />-->
+		<!--		<lang.findUsagesProvider language="Properties" order="first"-->
+		<!--		                         implementationClass="com.github.cazayus.properties.parsing.CEAPropertiesFindUsagesProvider" />-->
+		<!--		<lang.syntaxHighlighter language="Properties" order="first" implementationClass="com.github.cazayus.properties.parsing.CEAPropertiesHighlighter" />-->
+
+		<lang.formatter language="Properties" order="first"
+		                implementationClass="com.github.cazayus.properties.formatting.CEAPropertiesFormattingModelBuilder" />
 		<localInspection language="Properties" shortName="CeaUnsortedPropertiesFile" bundle="messages.PropertiesBundle"
 		                 key="alpha.unsorted.properties.file.inspection.display.name.cea"
 		                 groupKey="properties.files.inspection.group.display.name"
 		                 enabledByDefault="true" level="ERROR"
-		                 implementationClass="com.github.cazayus.properties.inspection.CeaUnsortedPropertiesFileInspection" />
+		                 implementationClass="com.github.cazayus.properties.inspection.UnsortedPropertiesFileInspection" />
 	</extensions>
 
 	<projectListeners>

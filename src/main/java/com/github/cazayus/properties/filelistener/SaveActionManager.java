@@ -8,8 +8,8 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.jetbrains.annotations.NotNull;
 
-import com.github.cazayus.properties.inspection.CeaUnsortedPropertiesFileInspection;
 import com.github.cazayus.properties.inspection.InspectionProcessor;
+import com.github.cazayus.properties.inspection.UnsortedPropertiesFileInspection;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManagerListener;
@@ -71,7 +71,7 @@ public final class SaveActionManager implements FileDocumentManagerListener {
 	}
 
 	private static boolean isPsiFileFresh(PsiFile psiFile) {
-		return psiFile.getModificationStamp() != 0;
+		return psiFile.getModificationStamp() != 0L;
 	}
 
 	private static boolean isPsiFileValid(PsiFile psiFile) {
@@ -97,6 +97,6 @@ public final class SaveActionManager implements FileDocumentManagerListener {
 	}
 
 	private static Runnable getSaveActionsProcessors(Project project, PsiFile psiFile) {
-		return new InspectionProcessor(project, psiFile, new CeaUnsortedPropertiesFileInspection());
+		return new InspectionProcessor(project, psiFile, new UnsortedPropertiesFileInspection());
 	}
 }

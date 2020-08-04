@@ -38,7 +38,7 @@ public final class InspectionProcessor implements Runnable {
 	public void run() {
 		ApplicationManager.getApplication().invokeLater(() -> WriteCommandAction.writeCommandAction(project).run(() -> {
 			InspectionManager inspectionManager = InspectionManager.getInstance(project);
-			GlobalInspectionContext context = inspectionManager.createNewGlobalContext(false);
+			GlobalInspectionContext context = inspectionManager.createNewGlobalContext();
 			LocalInspectionToolWrapper toolWrapper = new LocalInspectionToolWrapper(inspectionTool);
 			List<ProblemDescriptor> problemDescriptors;
 			try {
@@ -47,7 +47,7 @@ public final class InspectionProcessor implements Runnable {
 				return;
 			}
 			for (ProblemDescriptor problemDescriptor : problemDescriptors) {
-				QuickFix[] fixes = problemDescriptor.getFixes();
+				QuickFix<ProblemDescriptor>[] fixes = problemDescriptor.getFixes();
 				if (fixes != null) {
 					writeQuickFixes(problemDescriptor, fixes);
 				}
@@ -55,12 +55,10 @@ public final class InspectionProcessor implements Runnable {
 		}));
 	}
 
-	private void writeQuickFixes(ProblemDescriptor problemDescriptor, QuickFix[] fixes) {
-		for (QuickFix fix : fixes) {
-			@SuppressWarnings("unchecked")
-			QuickFix<ProblemDescriptor> typedFix = (QuickFix<ProblemDescriptor>) fix;
-			if (typedFix != null) {
-				typedFix.applyFix(project, problemDescriptor);
+	private void writeQuickFixes(ProblemDescriptor problemDescriptor, QuickFix<ProblemDescriptor>[] fixes) {
+		for (QuickFix<ProblemDescriptor> fix : fixes) {
+			if (fix != null) {
+				fix.applyFix(project, problemDescriptor);
 			}
 		}
 	}
