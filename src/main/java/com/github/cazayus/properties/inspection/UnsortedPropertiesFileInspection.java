@@ -144,7 +144,7 @@ public final class UnsortedPropertiesFileInspection extends LocalInspectionTool 
 			}
 
 			String value = property.getValue();
-			if ((value == null) || value.trim().isEmpty()) {
+			if (value == null) {
 				return false;
 			}
 
