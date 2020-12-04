@@ -3,5 +3,7 @@
 # propertiesFormatter Changelog
 
 ## [Unreleased]
+
 ### Added
-- Initial scaffold created from [IntelliJ Platform Plugin Template](https://github.com/JetBrains/intellij-platform-plugin-template)
+
+- Support for 2020.3
