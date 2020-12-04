@@ -11,13 +11,6 @@
 	<depends>com.intellij.modules.platform</depends>
 
 	<extensions defaultExtensionNs="com.intellij">
-		<!--		<lang.parserDefinition language="Properties" order="first" implementationClass="com.github.cazayus.properties.parsing.CEAPropertiesParserDefinition" />-->
-		<!--		<idIndexer filetype="Properties" order="first" implementationClass="com.github.cazayus.properties.parsing.CEAPropertiesIdIndexer" />-->
-		<!--		<todoIndexer filetype="Properties" order="first" implementationClass="com.github.cazayus.properties.parsing.CEAPropertiesTodoIndexer" />-->
-		<!--		<lang.findUsagesProvider language="Properties" order="first"-->
-		<!--		                         implementationClass="com.github.cazayus.properties.parsing.CEAPropertiesFindUsagesProvider" />-->
-		<!--		<lang.syntaxHighlighter language="Properties" order="first" implementationClass="com.github.cazayus.properties.parsing.CEAPropertiesHighlighter" />-->
-
 		<lang.formatter language="Properties" order="first"
 		                implementationClass="com.github.cazayus.properties.formatting.CEAPropertiesFormattingModelBuilder" />
 		<localInspection language="Properties" shortName="CeaUnsortedPropertiesFile" bundle="messages.PropertiesBundle"

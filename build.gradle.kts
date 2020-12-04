@@ -8,8 +8,6 @@ plugins {
     id("java")
     // Kotlin support
     id("org.jetbrains.kotlin.jvm") version "1.3.72"
-    // Lexer generation
-    id("org.jetbrains.grammarkit") version "2020.2.1"
     // gradle-intellij-plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
     id("org.jetbrains.intellij") version "0.4.21"
     // gradle-changelog-plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
@@ -110,21 +108,5 @@ tasks {
         dependsOn("patchChangelog")
         token(System.getenv("PUBLISH_TOKEN"))
         channels(pluginVersion.split('-').getOrElse(1) { "default" }.split('.').first())
-    }
-}
-
-allprojects {
-    apply {
-        plugin("org.jetbrains.grammarkit")
-    }
-    val generatePropertiesLexer = task<org.jetbrains.grammarkit.tasks.GenerateLexer>("generatePropertiesLexer") {
-        source = "src/main/resources/CEAProperties.flex"
-        targetDir = "src/main/java/com/github/cazayus/properties/parsing"
-        targetClass = "_CEAPropertiesLexer"
-        purgeOldFiles = true
-    }
-
-    tasks.withType<JavaCompile> {
-        dependsOn(generatePropertiesLexer)
     }
 }
