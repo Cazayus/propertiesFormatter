@@ -5,9 +5,9 @@
 	<description>This plugin adds an Inspection that is applied on save always</description>
 	<vendor email="daniel.cazayus@cea.fr">DCA</vendor>
 
-	<!-- Product and plugin compatibility requirements -->
-	<!-- https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html -->
-	<depends>com.intellij.modules.platform</depends>
+    <!-- Product and plugin compatibility requirements -->
+    <!-- https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
 
 	<extensions defaultExtensionNs="com.intellij">
 		<lang.formatter language="Properties" order="first"
