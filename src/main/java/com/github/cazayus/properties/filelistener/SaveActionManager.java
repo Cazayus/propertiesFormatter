@@ -5,7 +5,6 @@ import static java.util.Collections.synchronizedList;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Level;
 import org.jetbrains.annotations.NotNull;
 
 import com.github.cazayus.properties.inspection.InspectionProcessor;
@@ -29,10 +28,6 @@ import com.intellij.util.PsiErrorElementUtil;
 public final class SaveActionManager implements FileDocumentManagerListener {
 	private static final Logger LOGGER = Logger.getInstance(SaveActionManager.class);
 	private static final List<Runnable> runningProcessors = synchronizedList(new ArrayList<>());
-
-	static {
-		LOGGER.setLevel(Level.DEBUG);
-	}
 
 	@Override
 	public void beforeDocumentSaving(@NotNull Document document) {
